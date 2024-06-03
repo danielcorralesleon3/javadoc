@@ -7,15 +7,22 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+/**
+ * Clase que crea una ventana para insertar un nuevo campeón en la base de datos.
+ */
 class InsertarCampeones extends JFrame {
     private JTextField nombreTexto, vidaTexto, dañoTexto, rolTexto, ajusteTexto, itemMasUtilizadoTexto, mejorBuffTexto;
     private JCheckBox ajustadoCheckBox;
-    
 
+    /**
+     * Constructor que inicializa la ventana de inserción de campeón.
+     * El parametro es la url de la
+     */
     public InsertarCampeones(String url) {
         setTitle("Insertar Campeón");
         setLayout(new GridLayout(9, 2));
 
+        // Inicialización de componentes gráficos
         JLabel nombre = new JLabel("Nombre:");
         nombreTexto = new JTextField();
         JLabel vida = new JLabel("Vida:");
@@ -34,6 +41,7 @@ class InsertarCampeones extends JFrame {
         mejorBuffTexto = new JTextField();
         JButton botonInsertar = new JButton("Insertar");
 
+        // Añadir componentes a la ventana
         add(nombre);
         add(nombreTexto);
         add(vida);
@@ -52,14 +60,21 @@ class InsertarCampeones extends JFrame {
         add(mejorBuffTexto);
         add(botonInsertar);
 
+        // Acción del botón insertar
         botonInsertar.addActionListener(e -> insertarDatos(url));
 
+        // Configuración de la ventana
         setSize(400, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
     }
 
+    /**
+     * Inserta los datos del nuevo campeón en la base de datos.
+     */
     private void insertarDatos(String url) {
+        try {
+            // Obtener los datos del formulario
             String nombre = nombreTexto.getText();
             int vida = Integer.parseInt(vidaTexto.getText());
             int daño = Integer.parseInt(dañoTexto.getText());
@@ -69,23 +84,27 @@ class InsertarCampeones extends JFrame {
             int itemMasUtilizado = Integer.parseInt(itemMasUtilizadoTexto.getText());
             int mejorBuff = Integer.parseInt(mejorBuffTexto.getText());
 
+            // Consulta a BBDD para insertar un nuevo campeón
             String insert = "INSERT INTO campeones (nombre, vida, daño, rol, ajustado, ajuste, `item mas utilizado`, `mejor buff`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-            try{
-                Connection connection = DriverManager.getConnection(url, "root", "");
-                PreparedStatement statement = connection.prepareStatement(insert);
-                statement.setString(1, nombre);
-                statement.setInt(2, vida);
-                statement.setInt(3, daño);
-                statement.setString(4, rol);
-                statement.setBoolean(5, ajustado);
-                statement.setString(6, ajuste);
-                statement.setInt(7, itemMasUtilizado);
-                statement.setInt(8, mejorBuff);
-                statement.executeUpdate(); 
-            } catch (SQLException e) {
-                System.out.println("Error de BBDD: " + e.getMessage());
-            }
-       
+            // Establecer la conexión y ejecutar la consulta
+            Connection connection = DriverManager.getConnection(url, "root", "");
+            PreparedStatement statement = connection.prepareStatement(insert);
+            statement.setString(1, nombre);
+            statement.setInt(2, vida);
+            statement.setInt(3, daño);
+            statement.setString(4, rol);
+            statement.setBoolean(5, ajustado);
+            statement.setString(6, ajuste);
+            statement.setInt(7, itemMasUtilizado);
+            statement.setInt(8, mejorBuff);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            //Gestionar error de BBDD
+            System.out.println("Error de BBDD: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            //Gestionar error al insertar datos
+            System.out.println("Error de formato de número: " + e.getMessage());
+        }
     }
 }

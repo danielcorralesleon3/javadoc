@@ -10,61 +10,57 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
- * Clase que crea una ventana para visualizar todas las entidades del mapa almacenadas en la base de datos MySQL.
+ * Clase que crea una ventana para visualizar todos los items almacenados en la base de datos.
  */
-class tablaEntidades extends JFrame {
+class tablaitems extends JFrame {
 
     /**
-     * Constructor que inicializa la ventana de visualización de entidades del mapa.
+     * Constructor que inicializa la ventana de visualización de items.
      *
      * El parametro es la url de la BBDD
      */
-    public tablaEntidades(String url) {
+    public tablaitems(String url) {
         DefaultTableModel model = new DefaultTableModel();
         JTable table = new JTable(model);
 
         // Añadir columnas a la tabla
         model.addColumn("ID");
         model.addColumn("Nombre");
-        model.addColumn("Tipo de entidad");
-        model.addColumn("Ajustado");
-        model.addColumn("Ajuste");
         model.addColumn("Vida");
         model.addColumn("Daño");
-        model.addColumn("Buff (daño adaptable)");
-        model.addColumn("Buff (vida max)");
+        model.addColumn("Tipo de daño");
+        model.addColumn("Ajustado");
+        model.addColumn("Ajuste");
 
         // Conectar a la base de datos y cargar los datos en la tabla
         try {
             Connection connection = DriverManager.getConnection(url, "root", "");
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM `entidades del mapa`");
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM items");
             ResultSet resultSet = statement.executeQuery();
 
             // Cargar cada fila de resultados en la tabla
             while (resultSet.next()) {
                 Vector<String> row = new Vector<>();
                 row.add(resultSet.getString("ID"));
-                row.add(resultSet.getString("nombre"));
-                row.add(resultSet.getString("tipo de entidad"));
-                row.add(resultSet.getString("ajustado"));
-                row.add(resultSet.getString("ajuste"));
+                row.add(resultSet.getString("Nombre"));
                 row.add(resultSet.getString("vida"));
                 row.add(resultSet.getString("daño"));
-                row.add(resultSet.getString("buff(daño adaptable)"));
-                row.add(resultSet.getString("buff(vida max)"));
+                row.add(resultSet.getString("tipo de daño"));
+                row.add(resultSet.getString("ajustado"));
+                row.add(resultSet.getString("ajuste"));
                 model.addRow(row);
             }
 
         } catch (SQLException e) {
-            //Gestiona errores de BBDD
+            //Gestionar errores de BBDD
             System.out.println("Error de BBDD: " + e.getMessage());
         }
 
         // Configurar el JScrollPane y la ventana
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane);
-        //Configurar ventana
-        setTitle("Tabla de entidades");
+
+        setTitle("Tabla de items");
         setSize(800, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
